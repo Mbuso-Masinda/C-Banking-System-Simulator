@@ -44,6 +44,10 @@ public:
     [[nodiscard]] std::chrono::system_clock::time_point getTimeStamp() const { return timeStamp; }
 
     void displayTransaction() const;
+
+    void operator-() {
+        amount *= -1;
+    }
 };
 
 

@@ -7,4 +7,8 @@ add_executable(BankApp3 main.cpp
         Transaction.cpp
         Transaction.h
         Account.cpp
-        Account.h)
+        Account.h
+        User.cpp
+        User.h
+        Bank.cpp
+        Bank.h)

@@ -28,6 +28,7 @@ public:
     [[nodiscard]] const std::string& getAccountNumber() const { return accountNumber; }
     [[nodiscard]] const int64_t& getBalanceCache() const { return balanceCache; }
     [[nodiscard]] const std::vector<Transaction>& getTransactions() const { return transactions; }
+    void addTransaction(const Transaction& transaction) { transactions.push_back(transaction); }
 
     void deposit(Transaction& transaction);
     void withdraw(Transaction& transaction);
