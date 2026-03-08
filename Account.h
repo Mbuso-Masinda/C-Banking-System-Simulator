@@ -23,6 +23,7 @@ public:
           balance(0),
           balanceCache(balanceCache) {}
 
+    void updateBalance();
     void updateBalanceCache();
     [[nodiscard]] const std::string& getAccountNumber() const { return accountNumber; }
     [[nodiscard]] const int64_t& getBalanceCache() const { return balanceCache; }
