@@ -2,7 +2,7 @@
 // Created by mbuso-masinda on 3/8/26.
 //
 
-#include "Account.h"
+#include "../include/Account.h"
 
 void Account::updateBalance() {
     balance = 0;
@@ -12,7 +12,7 @@ void Account::updateBalance() {
 }
 
 void Account::updateBalanceCache() {
-    balanceCache = balance;
+    balanceCache = getBalance();
 }
 
 void Account::deposit(const Transaction& transaction) {

@@ -43,7 +43,10 @@ public:
     void displayUser() const;
 
     [[nodiscard]] std::vector<Account>& getAccounts() { return accounts; }
+    [[nodiscard]] const std::string& getUsername() const { return username; };
     void addAccount(std::string accountNum);
+
+    void saveUser(std::ofstream& out) const;
 };
 
 

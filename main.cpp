@@ -1,47 +1,54 @@
 #include <iostream>
-#include "Account.h"
+#include "include/Bank.h"
 
 int main() {
-    Account account("12345", 100);
+    Account account("12345", 0), account2("54321", 0), account3("24680", 0);
+    Bank bank;
 
     Transaction transaction1("246", "0405", "12345", "none", "dogs", -60),
-                transaction2("246", "0405", "12345", "none", "deposit", +200);
+                transaction2("246", "0405", "12345", "none", "deposit", 300),
+                transaction3("246", "0405", "12345", "24680", "transfer", 200),
+                transaction4("246", "0405", "12345", "none", "withdraw", -150);
 
-    std::cout << "Account num: " << account.getAccountNumber() << std::endl
-              << "Balance: " << account.getBalanceCache() << std::endl;
+    bank.signUpUser("Mbuso", "09342", "040508", "0814919232", "mbusomasinda@outlook.com", "Mlilo", "21MBMMlilo", "12334");
+    bank.signUpUser("Musa", "48334", "230206", "084625434", "musamasinda@outlook.com", "Parad3", "Password1", "234gb4");
 
-    std::cout << "\nTransactions: \n";
+    bank.getUsers()[0].addAccount("12345");
+    bank.getUsers()[1].addAccount("24680");
 
-    for (const auto& transaction : account.getTransactions()) {
-        transaction.displayTransaction();
-        std::cout << "===========\n";
-    }
+    std::cout << "\n\nBefore transfer\n\n";
 
-    std::cout << "\nWithdraw for dogs\n\n";
-    account.withdraw(transaction1);
+    std::cout << "Account num: " << bank.getUsers()[0].getAccounts()[0].getAccountNumber() << std::endl
+              << "Balance: " << bank.getUsers()[0].getAccounts()[0].getBalanceCache() << std::endl << std::endl;
 
-    std::cout << "Account num: " << account.getAccountNumber() << std::endl
-              << "Balance: " << account.getBalanceCache() << std::endl;
+    std::cout << "Account num: " << bank.getUsers()[1].getAccounts()[0].getAccountNumber() << std::endl
+              << "Balance: " << bank.getUsers()[1].getAccounts()[0].getBalanceCache() << std::endl << std::endl;
 
-    std::cout << "\nTransactions: \n";
+    bank.getUsers()[0].getAccounts()[0].deposit(transaction2);
 
-    for (const auto& transaction : account.getTransactions()) {
-        transaction.displayTransaction();
-        std::cout << "===========\n";
-    }
+    if (bank.transfer(transaction3))
+        std::cout << "Transfer Successful\n" << std::endl;
+    else
+        std::cout << "Transfer Failed\n" << std::endl;
 
-    std::cout << "\nDeposit for dogs\n\n";
-    account.deposit(transaction2);
+    std::cout << "\n\nAfter transfer\n\n";
 
-    account.updateBalanceCache();
+    std::cout << "Account num: " << bank.getUsers()[0].getAccounts()[0].getAccountNumber() << std::endl
+              << "Balance: " << bank.getUsers()[0].getAccounts()[0].getBalanceCache() << std::endl << std::endl;
 
-    std::cout << "Account num: " << account.getAccountNumber() << std::endl
-              << "Balance: " << account.getBalanceCache() << std::endl;
+    std::cout << "Account num: " << bank.getUsers()[1].getAccounts()[0].getAccountNumber() << std::endl
+              << "Balance: " << bank.getUsers()[1].getAccounts()[0].getBalanceCache() << std::endl << std::endl;
 
-    std::cout << "\nTransactions: \n";
+    std::cout << "\n\nUpdated cache\n\n";
 
-    for (const auto& transaction : account.getTransactions()) {
-        transaction.displayTransaction();
-        std::cout << "===========\n";
-    }
+    bank.getUsers()[0].getAccounts()[0].updateBalanceCache();
+    bank.getUsers()[1].getAccounts()[0].updateBalanceCache();
+
+    std::cout << "Account num: " << bank.getUsers()[0].getAccounts()[0].getAccountNumber() << std::endl
+              << "Balance: " << bank.getUsers()[0].getAccounts()[0].getBalanceCache() << std::endl << std::endl;
+
+    std::cout << "Account num: " << bank.getUsers()[1].getAccounts()[0].getAccountNumber() << std::endl
+              << "Balance: " << bank.getUsers()[1].getAccounts()[0].getBalanceCache() << std::endl << std::endl;
+
+
 }

@@ -4,11 +4,11 @@ project(BankApp3)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(BankApp3 main.cpp
-        Transaction.cpp
-        Transaction.h
-        Account.cpp
-        Account.h
-        User.cpp
-        User.h
-        Bank.cpp
-        Bank.h)
+        src/Transaction.cpp
+        include/Transaction.h
+        src/Account.cpp
+        include/Account.h
+        src/User.cpp
+        include/User.h
+        src/Bank.cpp
+        include/Bank.h)

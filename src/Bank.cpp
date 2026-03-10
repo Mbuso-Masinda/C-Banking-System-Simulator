@@ -2,9 +2,11 @@
 // Created by mbuso-masinda on 3/8/26.
 //
 
-#include "Bank.h"
+#include "../include/Bank.h"
 
 #include <utility>
+#include <fstream>
+#include <filesystem>
 
 bool Bank::transfer(const Transaction& transaction) {
     Account *sender = nullptr;
@@ -48,4 +50,24 @@ void Bank::signUpUser(std::string fullName,
               std::move(userId));
 
     users.emplace_back(std::move(user));
+}
+
+
+void Bank::saveBank() {
+    namespace fs = std::filesystem;
+
+    for (const auto& user : users) {
+        const std::string username = user.getUsername();
+        if (!fs::exists("../data/Users/" + username))
+            fs::create_directory("../data/Users/" + username);
+
+        if (!fs::exists("../data/Global_Transactions"))
+            fs::create_directory("../data/Global_Transactions");
+
+        std::ofstream out(("../data/Users/" + username + "/") + username + "_Details.txt");
+
+        user.saveUser(out);
+    }
+
+
 }

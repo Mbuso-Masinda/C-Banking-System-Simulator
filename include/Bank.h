@@ -6,7 +6,7 @@
 #define BANKAPP3_BANK_H
 #include <vector>
 
-#include "User.h"
+#include "../include/User.h"
 
 
 class Bank {
@@ -25,6 +25,8 @@ public:
                     std::string password,
                     std::string userId);
     [[nodiscard]] bool transfer(const Transaction& transaction);
+
+    void saveBank();
 };
 
 
