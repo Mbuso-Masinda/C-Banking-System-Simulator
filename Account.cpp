@@ -21,6 +21,6 @@ void Account::deposit(const Transaction& transaction) {
 }
 
 void Account::withdraw(const Transaction& transaction){
-    transactions.emplace_back(transaction);
+    transactions.emplace_back(-transaction);
     updateBalance();
 }

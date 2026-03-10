@@ -29,8 +29,8 @@ public:
                       userId(std::move(userId)),
                       fromAccount(std::move(fromAccount)),
                       toAccount(std::move(toAccount)),
-                      amount(amount),
                       title(std::move(title)),
+                      amount(amount),
                       timeStamp(std::chrono::system_clock::now()){}
 
     virtual ~Transaction() = default;
@@ -45,8 +45,10 @@ public:
 
     void displayTransaction() const;
 
-    void operator-() {
-        amount *= -1;
+    Transaction operator-() const {
+        Transaction temp = *this;
+        temp.amount *= -1;
+        return temp;
     }
 };
 
