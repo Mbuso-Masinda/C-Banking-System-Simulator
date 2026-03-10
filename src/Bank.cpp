@@ -26,8 +26,8 @@ bool Bank::transfer(const Transaction& transaction) {
     if (!sender || !receiver)
         return false;
 
-    receiver->deposit(transaction);
-    sender->withdraw(transaction);
+    receiver->addTransaction(transaction);
+    sender->addTransaction(transaction);
 
     return true;
 }
@@ -56,18 +56,52 @@ void Bank::signUpUser(std::string fullName,
 void Bank::saveBank() {
     namespace fs = std::filesystem;
 
-    for (const auto& user : users) {
-        const std::string username = user.getUsername();
-        if (!fs::exists("../data/Users/" + username))
-            fs::create_directory("../data/Users/" + username);
+    if (!fs::exists("../data/transaction_ledger"))
+        fs::create_directory("../data/transaction_ledger");
 
-        if (!fs::exists("../data/Global_Transactions"))
-            fs::create_directory("../data/Global_Transactions");
+    for (const auto& user : users) {
+        const std::string& username = user.getUsername();
+        if (!fs::exists("../data/Users/" + username))
+            fs::create_directories("../data/Users/" + username);
 
         std::ofstream out(("../data/Users/" + username + "/") + username + "_Details.txt");
 
         user.saveUser(out);
+
+        out.close();
     }
 
+    for (auto& user : users) {
+        const std::string& username = user.getUsername();
+
+        for (auto& account : user.getAccounts()) {
+            if (!fs::exists("../data/Users/" + username + "/Accounts/" + account.getAccountNumber()))
+                fs::create_directories("../data/Users/" + username + "/Accounts/" + account.getAccountNumber());
+
+            const std::string path = "../data/Users/" + username + "/Accounts/" + account.getAccountNumber();
+
+            std::ofstream out(("../data/Users/" + username + "/Accounts/" + account.getAccountNumber() + "/accountDetails.txt"));
+
+            account.saveAccount(out, path);
+
+            out.close();
+
+            for (const auto& transaction : account.getTransactions()) {
+                transactionLedger.emplace_back(transaction);
+
+                std::ofstream ledger("../data/transaction_ledger/transactionLedger.csv", std::ios::app);
+
+                ledger << transaction.getTransactionId() << '|'
+                    << transaction.getUserId() << '|'
+                    << transaction.getFromAccount() << '|'
+                    << transaction.getToAccount() << '|'
+                    << transaction.getTitle() << '|'
+                    << transaction.getAmount() << std::endl;
+
+                ledger.close();
+            }
+        }
+    }
 
 }
+

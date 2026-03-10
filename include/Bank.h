@@ -11,6 +11,7 @@
 
 class Bank {
     std::vector<User> users;
+    std::vector<Transaction> transactionLedger;
 
 public:
 
@@ -27,6 +28,7 @@ public:
     [[nodiscard]] bool transfer(const Transaction& transaction);
 
     void saveBank();
+
 };
 
 

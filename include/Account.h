@@ -33,6 +33,7 @@ public:
 
     void deposit(const Transaction& transaction);
     void withdraw(const Transaction& transaction);
+    void saveAccount(std::ofstream& out, const std::string& path) const;
 };
 
 
