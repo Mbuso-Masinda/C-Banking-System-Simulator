@@ -1,4 +1,4 @@
-# MLILO Bank System (C++)
+# Bank System (C++)
 
 A command-line banking system built in **C++** that simulates core banking operations such as account management, deposits, withdrawals, transfers, and transaction tracking.
 
@@ -23,11 +23,12 @@ This project was built to deepen understanding of **object-oriented design, syst
 The system is structured using a layered design:
 
 Bank
-│
-├── Users
-│     └── Accounts
-│           └── Transactions
-│
+
+  └── Users
+
+         └── Accounts
+
+                └── Transactions
 └── Global transaction handling
 
 ### Core Classes
