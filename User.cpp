@@ -22,3 +22,8 @@ void User::displayUser() const {
     }
 
 }
+
+void User::addAccount(std::string accountNum) {
+    const Account account(std::move(accountNum), 0);
+    accounts.push_back(account);
+}

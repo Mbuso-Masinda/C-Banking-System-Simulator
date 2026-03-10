@@ -31,19 +31,19 @@ public:
          std::string username,
          std::string password,
          std::string userId)
-             : fullName(std::move(fullName)),
-               idNumber(std::move(idNumber)),
-               dateOfBirth(std::move(dateOfBirth)),
-               phoneNumber(std::move(phoneNumber)),
-               email(std::move(email)),
-               username(std::move(username)),
-               password(std::move(password)),
-               userId(std::move(userId)) {}
+        : fullName(std::move(fullName)),
+          idNumber(std::move(idNumber)),
+          dateOfBirth(std::move(dateOfBirth)),
+          phoneNumber(std::move(phoneNumber)),
+          email(std::move(email)),
+          username(std::move(username)),
+          password(std::move(password)),
+          userId(std::move(userId)){}
 
     void displayUser() const;
 
-    [[nodiscard]] const std::vector<Account>& getAccounts() const { return accounts; }
-    void addAccount(const Account& account)  { accounts.push_back(account); }
+    [[nodiscard]] std::vector<Account>& getAccounts() { return accounts; }
+    void addAccount(std::string accountNum);
 };
 
 

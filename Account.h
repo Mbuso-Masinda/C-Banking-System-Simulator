@@ -15,6 +15,7 @@ private:
     long long balance;
     int64_t balanceCache;
     std::vector<Transaction> transactions;
+    void updateBalance();
 
 public:
     Account(std::string accountNumber,
@@ -23,15 +24,14 @@ public:
           balance(0),
           balanceCache(balanceCache) {}
 
-    void updateBalance();
     void updateBalanceCache();
     [[nodiscard]] const std::string& getAccountNumber() const { return accountNumber; }
     [[nodiscard]] const int64_t& getBalanceCache() const { return balanceCache; }
     [[nodiscard]] const std::vector<Transaction>& getTransactions() const { return transactions; }
     void addTransaction(const Transaction& transaction) { transactions.push_back(transaction); }
 
-    void deposit(Transaction& transaction);
-    void withdraw(Transaction& transaction);
+    void deposit(const Transaction& transaction);
+    void withdraw(const Transaction& transaction);
 };
 
 

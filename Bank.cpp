@@ -6,15 +6,28 @@
 
 #include <utility>
 
-void Bank::transfer(Account& from, Account& to, Transaction& transaction) const {
-    from.withdraw(transaction);
+bool Bank::transfer(const Transaction& transaction) {
+    Account *sender = nullptr;
+    Account *receiver = nullptr;
+
     for (auto& user : users) {
         for (auto& account : user.getAccounts()) {
-            if (account.getAccountNumber() == to.getAccountNumber()) {
-                to.deposit(transaction);
-            }
+
+            if (account.getAccountNumber() == transaction.getFromAccount())
+                sender = &account;
+
+            if (account.getAccountNumber() == transaction.getToAccount())
+                receiver = &account;
         }
     }
+
+    if (!sender || !receiver)
+        return false;
+
+    receiver->deposit(transaction);
+    sender->withdraw(transaction);
+
+    return true;
 }
 
 void Bank::signUpUser(std::string fullName,

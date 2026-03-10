@@ -14,7 +14,7 @@ class Bank {
 
 public:
 
-    [[nodiscard]] std::vector<User> getUsers() const { return users; }
+    [[nodiscard]] std::vector<User>& getUsers() { return users; }
 
     void signUpUser(std::string fullName,
                     std::string idNumber,
@@ -24,7 +24,7 @@ public:
                     std::string username,
                     std::string password,
                     std::string userId);
-    void transfer(Account& from, Account& to, Transaction& transaction) const;
+    [[nodiscard]] bool transfer(const Transaction& transaction);
 };
 
 

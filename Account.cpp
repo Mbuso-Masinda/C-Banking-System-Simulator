@@ -15,12 +15,12 @@ void Account::updateBalanceCache() {
     balanceCache = balance;
 }
 
-void Account::deposit(Transaction& transaction) {
+void Account::deposit(const Transaction& transaction) {
     transactions.emplace_back(transaction);
     updateBalance();
 }
 
-void Account::withdraw(Transaction& transaction) {
+void Account::withdraw(const Transaction& transaction){
     transactions.emplace_back(transaction);
     updateBalance();
 }
