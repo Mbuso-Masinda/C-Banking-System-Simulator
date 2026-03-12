@@ -29,7 +29,7 @@ public:
     static Account loadAccount(const std::string& path);
     void updateBalance(Account& acc);
 
-    void openUser(const int& index);
+    void openUser(const int& index) const;
     void login();
     void signUp();
 

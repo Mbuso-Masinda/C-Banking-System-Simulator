@@ -377,7 +377,7 @@ void Bank::signUp() {
 
 }
 
-void Bank::openUser(const int &index) {
+void Bank::openUser(const int &index) const {
     std::cout << "\nWelcome " << users[index].getUsername() << std::endl << std::endl;
 }
 
