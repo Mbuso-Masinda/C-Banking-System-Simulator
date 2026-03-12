@@ -41,7 +41,7 @@ void Bank::deposit(const Transaction &transaction) {
     for (auto& user : users) {
         for (auto& account : user.getAccounts()) {
 
-            if (account.getAccountNumber() == transaction.getFromAccount())
+            if (account.getAccountNumber() == transaction.getToAccount())
                 receiver = &account;
         }
     }
@@ -142,9 +142,14 @@ void Bank::saveBank() {
 void Bank::loadBank() {
     std::ifstream file("../data/transaction_ledger/transactionLedger.csv");
 
+    if (!file.is_open()) {
+        std::cerr << "Error opening tLedger\n";
+        return;
+    }
+
     std::string line;
 
-    while (getline(file, line)) {
+    while (getline(file, line, '\n')) {
         Transaction t = Transaction::fromCSV(line);
 
         transactionLedger.push_back(t);
@@ -230,4 +235,28 @@ Account Bank::loadAccount(const std::string& path) {
     in.close();
 
     return Account(accNum, balanceCache);
+}
+
+void Bank::updateBalance(Account& acc) {
+    for (auto& user : users) {
+        for (auto& account : user.getAccounts()) {
+            account.resetBalance();
+            for (auto& transaction : account.getTransactions()) {
+                for (auto& globalTransaction : transactionLedger) {
+                    if (transaction == globalTransaction.getTransactionId()) {
+                        if (globalTransaction.getFromAccount() == account.getAccountNumber()) {
+                            std::cout << "\nWithdraw amount: " << globalTransaction.getAmount() << std::endl;
+                            std::cout << account.getAccountNumber() << " : " << account.getBalance() << std::endl;
+                            account.withdraw(globalTransaction.getAmount());
+                        }
+                        else {
+                            std::cout << "\nDeposit amount: " << globalTransaction.getAmount() << std::endl;
+                            std::cout << account.getAccountNumber() << " : " << account.getBalance() << std::endl;
+                            account.deposit(globalTransaction.getAmount());
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

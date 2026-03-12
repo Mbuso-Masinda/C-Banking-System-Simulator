@@ -12,29 +12,26 @@
 class Account {
 private:
     std::string accountNumber;
-    long long balance;
-    int64_t balanceCache;
+    int64_t balance;
     std::vector<std::string> transactions;
-    //void updateBalance();
 
 public:
     Account(std::string accountNumber,
-            const int64_t balanceCache)
+            const int64_t balance)
         : accountNumber(std::move(accountNumber)),
-          balance(0),
-          balanceCache(balanceCache) {}
+          balance(balance) {}
 
     Account(){}
 
     void updateBalanceCache();
     [[nodiscard]] int64_t getBalance() const { return balance; }
     [[nodiscard]] const std::string& getAccountNumber() const { return accountNumber; }
-    [[nodiscard]] const int64_t& getBalanceCache() const { return balanceCache; }
     [[nodiscard]] const std::vector<std::string>& getTransactions() const { return transactions; }
     void addTransaction(const std::string& transaction) { transactions.push_back(transaction); }
+    void resetBalance() { balance = 0; }
 
-    void deposit(const Transaction& transaction);
-    void withdraw(const Transaction& transaction);
+    void deposit(const long long& amount);
+    void withdraw(const long long& amount);
     void saveAccount(std::ofstream& out, const std::string& path) const;
     void loadTransactions(std::ifstream& in);
 };

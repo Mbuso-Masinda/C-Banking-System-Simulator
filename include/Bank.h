@@ -35,6 +35,7 @@ public:
     static User loadUser(const std::string& path, const std::string& name);
 
     static Account loadAccount(const std::string& path);
+    void updateBalance(Account& acc);
 
 };
 
