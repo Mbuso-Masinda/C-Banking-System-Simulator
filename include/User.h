@@ -40,11 +40,13 @@ public:
           password(std::move(password)),
           userId(std::move(userId)){}
 
+    User(){}
+
     void displayUser() const;
 
     [[nodiscard]] std::vector<Account>& getAccounts() { return accounts; }
     [[nodiscard]] const std::string& getUsername() const { return username; };
-    void addAccount(std::string accountNum);
+    void addAccount(const Account& account);
 
     void saveUser(std::ofstream& out) const;
 };

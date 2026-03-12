@@ -14,3 +14,23 @@ void Transaction::displayTransaction() const {
               << "Title: " << title << std::endl
               << "Amount: " << std::fixed << std::setprecision(2) << amount << std::endl;
 }
+
+Transaction Transaction::fromCSV(const std::string &line) {
+    std::istringstream ss(line);
+    std::string newTransactionId, newUserId, newFromAccount, newToAccount, newTitle, newAmount, timestampStr;
+
+    getline(ss, newTransactionId, '|');
+    getline(ss, newUserId, '|');
+    getline(ss, newFromAccount, '|');
+    getline(ss, newToAccount, '|');
+    getline(ss, newTitle, '|');
+    getline(ss, newAmount, '|');
+    getline(ss, timestampStr, '|');
+
+    long long newNewAmount = std::stof(newAmount);
+
+    time_t rawTime = std::stoll(timestampStr);
+    auto timePoint = std::chrono::system_clock::from_time_t(rawTime);
+
+    return Transaction(newTransactionId, newUserId, newFromAccount, newToAccount, newTitle, newNewAmount, timePoint);
+}

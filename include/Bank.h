@@ -26,8 +26,15 @@ public:
                     std::string password,
                     std::string userId);
     [[nodiscard]] bool transfer(const Transaction& transaction);
+    void deposit(const Transaction& transaction);
+    void withdraw(const Transaction& transaction);
 
     void saveBank();
+    void loadBank();
+
+    static User loadUser(const std::string& path, const std::string& name);
+
+    static Account loadAccount(const std::string& path);
 
 };
 

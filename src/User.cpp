@@ -24,20 +24,19 @@ void User::displayUser() const {
 
 }
 
-void User::addAccount(std::string accountNum) {
-    const Account account(std::move(accountNum), 0);
+void User::addAccount(const Account& account) {
     accounts.push_back(account);
 }
 
 void User::saveUser(std::ofstream &out) const {
 
-    out << "Full Name: " << fullName << std::endl
-        << "ID number: " << idNumber << std::endl
-        << "Date of Birth: " << dateOfBirth << std::endl
-        << "Phone Number: " << phoneNumber << std::endl
-        << "Email: " << email << std::endl
-        << "Username: " << username << std::endl
-        << "Password: " << password << std::endl
-        << "Number of accounts: " << accounts.size() << std::endl;
+    out << fullName << std::endl
+        << idNumber << std::endl
+        << dateOfBirth << std::endl
+        << phoneNumber << std::endl
+        << email << std::endl
+        << username << std::endl
+        << password << std::endl
+        << userId << std::endl;
 
 }
