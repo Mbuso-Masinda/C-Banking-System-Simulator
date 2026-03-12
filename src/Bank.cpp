@@ -142,59 +142,92 @@ void Bank::saveBank() {
 void Bank::loadBank() {
     namespace fs = std::filesystem;
 
-    if (!fs::exists("../data/transaction_ledger"))
-        return;
+    if (fs::exists("../data/transaction_ledger")) {
+        std::ifstream file("../data/transaction_ledger/transactionLedger.csv");
 
-    std::ifstream file("../data/transaction_ledger/transactionLedger.csv");
-
-    if (!file.is_open()) {
-        std::cerr << "Error opening tLedger\n";
-        return;
-    }
-
-    std::string line;
-
-    while (getline(file, line, '\n')) {
-        Transaction t = Transaction::fromCSV(line);
-
-        transactionLedger.push_back(t);
-    }
-
-    namespace fs = std::filesystem;
-
-    for (const auto& entry : fs::directory_iterator("../data/Users")) {
-
-        std::string username = entry.path().filename();
-        std::string userPath = entry.path();
-
-        User user = loadUser(userPath, username);
-
-        for (const auto& accEntry : fs::directory_iterator(userPath + "/Accounts"))
-        {
-            if (accEntry.is_directory())
-            {
-                std::string accountPath = accEntry.path();
-
-                Account acc = loadAccount(accountPath);
-
-                std::ifstream in2(accountPath + "/transactionIDs.txt");
-
-                if (!in2.is_open()) {
-                    std::cerr << "Error opening transaction ID\n";
-                }
-
-                std::string line;
-
-                while (getline(in2, line, '\n')) {
-                    acc.addTransaction(line);
-                }
-
-                user.addAccount(acc);
-            }
+        if (!file.is_open()) {
+            std::cerr << "Error opening tLedger\n";
+            return;
         }
 
-        users.push_back(user);
+        std::string line;
+
+        while (getline(file, line, '\n')) {
+            Transaction t = Transaction::fromCSV(line);
+
+            transactionLedger.push_back(t);
+        }
+
+        for (const auto& entry : fs::directory_iterator("../data/Users")) {
+
+            std::string username = entry.path().filename();
+            std::string userPath = entry.path();
+
+            User user = loadUser(userPath, username);
+
+            for (const auto& accEntry : fs::directory_iterator(userPath + "/Accounts"))
+            {
+                if (accEntry.is_directory())
+                {
+                    std::string accountPath = accEntry.path();
+
+                    Account acc = loadAccount(accountPath);
+
+                    std::ifstream in2(accountPath + "/transactionIDs.txt");
+
+                    if (!in2.is_open()) {
+                        std::cerr << "Error opening transaction ID\n";
+                    }
+
+                    std::string line;
+
+                    while (getline(in2, line, '\n')) {
+                        acc.addTransaction(line);
+                    }
+
+                    user.addAccount(acc);
+                }
+            }
+
+            users.push_back(user);
+        }
+
+    }else if (fs::exists("../data/Users")) {
+        for (const auto& entry : fs::directory_iterator("../data/Users")) {
+
+            std::string username = entry.path().filename();
+            std::string userPath = entry.path();
+
+            User user = loadUser(userPath, username);
+
+            for (const auto& accEntry : fs::directory_iterator(userPath + "/Accounts"))
+            {
+                if (accEntry.is_directory())
+                {
+                    std::string accountPath = accEntry.path();
+
+                    Account acc = loadAccount(accountPath);
+
+                    std::ifstream in2(accountPath + "/transactionIDs.txt");
+
+                    if (!in2.is_open()) {
+                        std::cerr << "Error opening transaction ID\n";
+                    }
+
+                    std::string line;
+
+                    while (getline(in2, line, '\n')) {
+                        acc.addTransaction(line);
+                    }
+
+                    user.addAccount(acc);
+                }
+            }
+
+            users.push_back(user);
+        }
     }
+
 }
 
 User Bank::loadUser(const std::string& path, const std::string& name) {
