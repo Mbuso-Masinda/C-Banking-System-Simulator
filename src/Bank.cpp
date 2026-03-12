@@ -140,6 +140,11 @@ void Bank::saveBank() {
 }
 
 void Bank::loadBank() {
+    namespace fs = std::filesystem;
+
+    if (!fs::exists("../data/transaction_ledger"))
+        return;
+
     std::ifstream file("../data/transaction_ledger/transactionLedger.csv");
 
     if (!file.is_open()) {
