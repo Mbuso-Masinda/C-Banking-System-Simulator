@@ -4,10 +4,10 @@
 
 #include "../include/Bank.h"
 
-#include <utility>
 #include <fstream>
 #include <filesystem>
 #include <iostream>
+#include <ctime>
 
 bool Bank::transfer(const Transaction& transaction) {
     Account *sender = nullptr;
@@ -66,27 +66,6 @@ void Bank::withdraw(const Transaction& transaction) {
 
     transactionLedger.emplace_back(transaction);
 }
-
-void Bank::signUpUser(std::string fullName,
-                      std::string idNumber,
-                      std::string dateOfBirth,
-                      std::string phoneNumber,
-                      std::string email,
-                      std::string username,
-                      std::string password,
-                      std::string userId) {
-    User user(std::move(fullName),
-              std::move(idNumber),
-              std::move(dateOfBirth),
-              std::move(phoneNumber),
-              std::move(email),
-              std::move(username),
-              std::move(password),
-              std::move(userId));
-
-    users.emplace_back(std::move(user));
-}
-
 
 void Bank::saveBank() {
     namespace fs = std::filesystem;
@@ -178,8 +157,6 @@ void Bank::loadBank() {
                     if (!in2.is_open()) {
                         std::cerr << "Error opening transaction ID\n";
                     }
-
-                    std::string line;
 
                     while (getline(in2, line, '\n')) {
                         acc.addTransaction(line);
@@ -297,4 +274,163 @@ void Bank::updateBalance(Account& acc) {
             }
         }
     }
+}
+
+void Bank::login() {
+    std::cout << "\nLogin\n\n";
+
+    int index = 0;
+    bool found = false;
+
+    std::cout << "Enter Username: ";
+    std::string username;
+    std::cin >> username;
+
+    for (size_t i =0; i < users.size(); i++) {
+        if (username == users[i].getUsername()) {
+            index = i;
+            found = true;
+            break;
+        }
+    }
+
+    int j = 1;
+
+    while (!found && j < 3) {
+        std::cout << "Enter Username(user not found): ";
+        std::cin >> username;
+
+        for (size_t i =0; i < users.size(); i++) {
+            if (username == users[i].getUsername()) {
+                index = i;
+                found = true;
+                break;
+            }
+        }
+
+        j++;
+    }
+
+    if (!found)
+        return;
+
+
+    std::cout << "Enter Password: ";
+    std::string password;
+    std::cin >> password;
+
+    j = 1;
+
+    while (!users[index].validatePassword(password) && j < 3) {
+        std::cout << "Enter Password(invalid password): ";
+        std::cin >> password;
+
+        j++;
+    }
+
+    if (!users[index].validatePassword(password))
+        return;
+
+    openUser(index);
+}
+
+void Bank::signUp() {
+    std::cout << "\nSignUp\n\n";
+
+    std::cout << "Enter Full Name: ";
+    std::string name;
+    getline(std::cin, name, '\n');
+
+    std::cout << "Enter ID number: ";
+    std::string id;
+    getline(std::cin, id, '\n');
+
+    std::cout << "Enter date of birth(DD/MM/YYYY): ";
+    std::string date;
+    getline(std::cin, date, '\n');
+
+    std::cout << "Enter phone number: ";
+    std::string phone;
+    getline(std::cin, phone, '\n');
+
+    std::cout << "Enter email: ";
+    std::string email;
+    getline(std::cin, email, '\n');
+
+    std::cout << "Enter username: ";
+    std::string username;
+    getline(std::cin, username, '\n');
+
+    std::cout << "Enter password: ";
+    std::string password;
+    getline(std::cin, password, '\n');
+
+    const std::string userID = createUserID(*this);
+
+    User user(name, id, date, phone, email, username, password, userID);
+
+    users.push_back(user);
+
+    std::cout << "\nYour information:\n";
+
+    user.displayUser();
+
+}
+
+void Bank::openUser(const int &index) {
+    std::cout << "\nWelcome " << users[index].getUsername() << std::endl << std::endl;
+}
+
+std::string createUserID(const Bank &b) {
+    std::string userID;
+    bool found = false;
+
+    srand(time(nullptr));
+
+    for (size_t i = 0; i < 3; i++) {
+        const int j = (rand() % 26);
+        const char c = j + 'A';
+        userID += c;
+    }
+
+    int num = 10000 + (rand() % 99999);
+
+    userID += std::to_string(num);
+
+    for (size_t i = 0; i < b.users.size(); i++) {
+        if (b.users[i].getUserId() == userID) {
+            found = true;
+            break;
+        }
+    }
+
+    while (found) {
+        found = false;
+        for (size_t i = 0; i < 3; i++) {
+            srand(time(nullptr));
+            const int j = (rand() % 26);
+            const char c = j + 'A';
+            userID += c;
+        }
+
+        num = 10000 + (rand() % 99999);
+
+        userID += std::to_string(num);
+
+        for (size_t i = 0; i < b.users.size(); i++) {
+            if (b.users[i].getUserId() == userID) {
+                found = true;
+                break;
+            }
+        }
+
+        for (size_t i = 0; i < b.users.size(); i++) {
+            if (b.users[i].getUserId() == userID) {
+                found = true;
+                break;
+            }
+        }
+    }
+
+    return userID;
 }

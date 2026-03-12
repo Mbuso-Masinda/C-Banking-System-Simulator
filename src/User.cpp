@@ -14,13 +14,15 @@ void User::displayUser() const {
               << "Phone Number: " << phoneNumber << std::endl
               << "Email: " << email << std::endl
               << "Username: " << username << std::endl
-              << "Password: " << password << std::endl;
-    std::cout << "\nAccounts:\n";
+              << "Password: " << password << std::endl
+              << "User ID: " << userId << std::endl;
+
+    /*std::cout << "\nAccounts:\n";
 
     for (const auto& account : accounts) {
         std::cout << "Account number: " << account.getAccountNumber() << std::endl
                   << "Account balance: " << account.getBalance() << std::endl << std::endl;
-    }
+    }*/
 
 }
 
@@ -39,4 +41,11 @@ void User::saveUser(std::ofstream &out) const {
         << password << std::endl
         << userId << std::endl;
 
+}
+
+bool User::validatePassword(const std::string &input) const {
+    if (input == password)
+        return true;
+
+    return false;
 }

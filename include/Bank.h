@@ -17,14 +17,6 @@ public:
 
     [[nodiscard]] std::vector<User>& getUsers() { return users; }
 
-    void signUpUser(std::string fullName,
-                    std::string idNumber,
-                    std::string dateOfBirth,
-                    std::string phoneNumber,
-                    std::string email,
-                    std::string username,
-                    std::string password,
-                    std::string userId);
     [[nodiscard]] bool transfer(const Transaction& transaction);
     void deposit(const Transaction& transaction);
     void withdraw(const Transaction& transaction);
@@ -36,6 +28,12 @@ public:
 
     static Account loadAccount(const std::string& path);
     void updateBalance(Account& acc);
+
+    void openUser(const int& index);
+    void login();
+    void signUp();
+
+    friend std::string createUserID(const Bank &b);
 
 };
 

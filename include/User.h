@@ -46,9 +46,12 @@ public:
 
     [[nodiscard]] std::vector<Account>& getAccounts() { return accounts; }
     [[nodiscard]] const std::string& getUsername() const { return username; };
+    [[nodiscard]] const std::string& getUserId() const { return userId; };
     void addAccount(const Account& account);
 
     void saveUser(std::ofstream& out) const;
+
+    bool validatePassword(const std::string& input) const;
 };
 
 
