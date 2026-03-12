@@ -125,7 +125,7 @@ void Bank::saveBank() {
 
     for (const auto& transaction : transactionLedger) {
 
-        std::ofstream ledger("../data/transaction_ledger/transactionLedger.csv", std::ios::app);
+        std::ofstream ledger("../data/transaction_ledger/transactionLedger.csv");
 
         ledger << transaction.getTransactionId() << '|'
             << transaction.getUserId() << '|'
