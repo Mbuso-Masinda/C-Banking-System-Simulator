@@ -9,7 +9,6 @@
 
 
 class Transaction {
-private:
     std::string transactionId;
     std::string userId;
     std::string fromAccount;
@@ -39,7 +38,7 @@ public:
             std::string toAccount,
             std::string title,
             const long long amount,
-            std::chrono::system_clock::time_point timeStamp)
+            const std::chrono::system_clock::time_point timeStamp)
         : transactionId(std::move(transactionId)),
           userId(std::move(userId)),
           fromAccount(std::move(fromAccount)),
@@ -49,7 +48,8 @@ public:
           timeStamp(timeStamp) {}
 
     virtual ~Transaction() = default;
-    Transaction(){}
+    Transaction() : amount(0) {
+    }
 
     [[nodiscard]] const std::string& getTransactionId() const { return transactionId; }
     [[nodiscard]] const std::string& getUserId() const { return userId; }

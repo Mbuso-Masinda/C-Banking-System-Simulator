@@ -17,13 +17,6 @@ void User::displayUser() const {
               << "Password: " << password << std::endl
               << "User ID: " << userId << std::endl;
 
-    /*std::cout << "\nAccounts:\n";
-
-    for (const auto& account : accounts) {
-        std::cout << "Account number: " << account.getAccountNumber() << std::endl
-                  << "Account balance: " << account.getBalance() << std::endl << std::endl;
-    }*/
-
 }
 
 void User::addAccount(const Account& account) {

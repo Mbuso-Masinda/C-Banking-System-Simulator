@@ -7,6 +7,8 @@ int main() {
     int input = 0;
     Bank bank;
 
+    bank.loadBank();
+
     do {
         std::cout << "Welcome to the BANK SIMULATOR\n\n";
 
@@ -32,6 +34,8 @@ int main() {
             case 2:
                 std::cin.ignore();
                 bank.signUp();
+
+                bank.saveBank();
                 break;
             case 0:
                 break;
@@ -41,7 +45,7 @@ int main() {
     }while (input != 0);
 
 
-
+    bank.saveBank();
 
     return 0;
 }

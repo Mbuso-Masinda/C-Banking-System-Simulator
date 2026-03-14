@@ -12,7 +12,6 @@
 
 
 class User {
-private:
     std::string fullName;
     std::string idNumber;
     std::string dateOfBirth;
@@ -45,8 +44,9 @@ public:
     void displayUser() const;
 
     [[nodiscard]] std::vector<Account>& getAccounts() { return accounts; }
-    [[nodiscard]] const std::string& getUsername() const { return username; };
-    [[nodiscard]] const std::string& getUserId() const { return userId; };
+    [[nodiscard]] const std::string& getUsername() const { return username; }
+    [[nodiscard]] const std::string& getUserId() const { return userId; }
+
     void addAccount(const Account& account);
 
     void saveUser(std::ofstream& out) const;

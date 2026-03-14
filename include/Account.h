@@ -21,8 +21,6 @@ public:
         : accountNumber(std::move(accountNumber)),
           balance(balance) {}
 
-    Account(std::string accountNumber) : accountNumber(std::move(accountNumber)) {}
-
     Account(){}
 
     void updateBalanceCache();

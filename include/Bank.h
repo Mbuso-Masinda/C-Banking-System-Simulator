@@ -17,7 +17,7 @@ public:
 
     [[nodiscard]] std::vector<User>& getUsers() { return users; }
 
-    [[nodiscard]] bool transfer(const Transaction& transaction);
+    bool transfer(const Transaction& transaction);
     void deposit(const Transaction& transaction);
     void withdraw(const Transaction& transaction);
 
@@ -27,7 +27,7 @@ public:
     static User loadUser(const std::string& path, const std::string& name);
 
     static Account loadAccount(const std::string& path);
-    void updateBalance(Account& acc);
+    void updateBalance();
 
     void openUser(const int& index);
     void login();
