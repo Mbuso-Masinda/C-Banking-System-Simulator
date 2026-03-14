@@ -377,8 +377,41 @@ void Bank::signUp() {
 
 }
 
-void Bank::openUser(const int &index) const {
-    std::cout << "\nWelcome " << users[index].getUsername() << std::endl << std::endl;
+void Bank::openUser(const int &index) {
+    User user = users[index];
+    int input = 0;
+    std::cout << "\nWelcome " << user.getUsername() << std::endl << std::endl;
+
+    std::cout << "1. Open Account\n"
+              << "2. Create Account\n"
+              << "3. Delete Account\n"
+              << "0. Exit\n";
+
+    std::cin >> input;
+
+    while (input < 0 || input > 2) {
+        std::cout << "Please enter a valid input\n";
+        std::cout << "input: ";
+        std::cin >> input;
+    }
+
+    switch (input) {
+        case 1:
+            openAccounts(index);
+            break;
+        case 2:
+            if (createAccount(index))
+                std::cout << "SUCCESS\n";
+            else
+                std::cout << "FAILED\n";
+            break;
+        case 3:
+            break;
+        case 0:
+            break;
+        default:
+            std::cerr << "Invalid input\n";
+    }
 }
 
 std::string createUserID(const Bank &b) {
@@ -405,6 +438,7 @@ std::string createUserID(const Bank &b) {
     }
 
     while (found) {
+        userID.clear();
         found = false;
         for (size_t i = 0; i < 3; i++) {
             srand(time(nullptr));
@@ -433,4 +467,223 @@ std::string createUserID(const Bank &b) {
     }
 
     return userID;
+}
+
+void Bank::openAccounts(const int &index) {
+    int input = 0;
+
+    do {
+        std::cout << "Accounts:\n\n";
+
+        for (size_t i = 0; i < users[index].getAccounts().size(); i++) {
+            std::cout << i + 1 << ". " << users[index].getAccounts()[i].getAccountNumber() << std::endl;
+        }
+
+        std::cout << "0. Exit\n";
+
+        std::cout << "input: ";
+        std::cin >> input;
+
+        while (input < 0 || input > users[index].getAccounts().size()) {
+            std::cout << "Please enter a valid input\n";
+            std::cout << "input: ";
+            std::cin >> input;
+        }
+
+
+
+        if (input != 0)
+            openAccount(users[index].getAccounts()[input - 1], index);
+    }while (input != 0);
+}
+
+void Bank::openAccount(Account& acc, const int& index) {
+    std::cout << "Account number: " << acc.getAccountNumber() << std::endl << std::endl;
+
+    int input = 0;
+    long long amount = 0;
+
+    Transaction t;
+    std::string receiver;
+
+    do {
+
+        std::cout << "1. Deposit\n"
+                  << "2. Withdraw\n"
+                  << "3. Transfer\n"
+                  << "0. Exit\n";
+
+        std::cout << "input: ";
+        std::cin >> input;
+
+        while (input < 0 || input > 3) {
+            std::cout << "input(Please enter a valid input): ";
+            std::cin >> input;
+        }
+
+        switch (input) {
+            case 1:
+                std::cout << "Deposit\n\n";
+
+                std::cout << "Enter amount: R";
+                std::cin >> amount;
+
+                t = createTransaction(amount, index, acc);
+                this->deposit(t);
+                break;
+
+            case 2:
+                std::cout << "Withdraw\n\n";
+
+                std::cout << "Enter amount: R";
+                std::cin >> amount;
+
+                t = createTransaction(amount, index, acc);
+                withdraw(t);
+                break;
+            case 3:
+                std::cout << "Transfer\n\n";
+
+                std::cout << "Enter amount: R";
+                std::cin >> amount;
+
+                std::cout << "Enter receiver account number: ";
+                std::cin >> receiver;
+
+                t = createTransaction(amount, index, acc, receiver);
+
+                transfer(t);
+                break;
+
+            case 0:
+                break;
+            default:
+                std::cout << "Please enter a valid input\n";
+                break;
+
+        }
+
+    }while (input != 0);
+}
+
+Transaction Bank::createTransaction(const long long& amount, const int& index,  const Account& acc) const {
+    const std::string userID = users[index].getUserId();
+    const std::string fromAcc = "BANK";
+    const std::string toAcc = acc.getAccountNumber();
+    const std::string title = "DEPOSIT";
+    const std::string transactionID = createTransactionID(*this);
+
+    Transaction t(transactionID, userID, fromAcc, toAcc, title, amount);
+
+    return t;
+}
+
+Transaction Bank::createTransaction(const long long& amount, const int& index,  const Account& acc, const std::string& receiver) {
+    bool found = false;
+
+    std::string toAcc;
+
+    for (size_t i = 0; i < users[index].getAccounts().size(); i++) {
+        if (users[index].getAccounts()[i].getAccountNumber() == receiver) {
+            toAcc = receiver;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        std::cerr << "Account not found\n";
+        Transaction t;
+        return t;
+    }
+
+    const std::string userID = users[index].getUserId();
+    const std::string fromAcc = acc.getAccountNumber();
+
+    const std::string title = "DEPOSIT";
+    const std::string transactionID = createTransactionID(*this);
+
+    Transaction t(transactionID, userID, fromAcc, toAcc, title, amount);
+
+    return t;
+}
+
+std::string createTransactionID(const Bank &b) {
+    std::string transactionID;
+    bool found = false;
+
+    srand(time(nullptr));
+
+
+    long int num = 10000000 + rand() % 99999999;
+    transactionID += std::to_string(num);
+
+    num = 1000 + rand() % 9999;
+    transactionID += std::to_string(num);
+
+    return transactionID;
+}
+
+bool Bank::createAccount(const int &index) {
+    bool found = false;
+    std::string accountNumber;
+
+    srand(time(nullptr));
+
+    int num = 10000 + rand() % 99999;
+
+    accountNumber += std::to_string(num) + " - ";
+
+    num = 1000 + rand() % 9999;
+
+    accountNumber += std::to_string(num) + " - ";
+
+    num = 10 + rand() % 99;
+
+    accountNumber += std::to_string(num);
+
+    for (auto& user : users) {
+        for (const auto& account : user.getAccounts()) {
+            if (account.getAccountNumber() == accountNumber) {
+                found = true;
+                break;
+            }
+        }
+    }
+    while (found) {
+        accountNumber = "";
+
+        num = 10000 + rand() % 99999;
+
+        accountNumber += std::to_string(num) + " - ";
+
+        num = 1000 + rand() % 9999;
+
+        accountNumber += std::to_string(num) + " - ";
+
+        num = 10 + rand() % 99;
+
+        accountNumber += std::to_string(num);
+
+        for (auto& user : users) {
+            for (const auto& account : user.getAccounts()) {
+                if (account.getAccountNumber() == accountNumber) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    const Account acc(accountNumber);
+
+    users[index].addAccount(acc);
+
+    for (int i = 0; i < users[index].getAccounts().size(); i++) {
+        if (users[index].getAccounts()[i].getAccountNumber() == acc.getAccountNumber()) {
+            return true;
+        }
+    }
+
+    return false;
 }

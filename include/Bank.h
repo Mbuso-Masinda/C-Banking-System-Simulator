@@ -29,11 +29,17 @@ public:
     static Account loadAccount(const std::string& path);
     void updateBalance(Account& acc);
 
-    void openUser(const int& index) const;
+    void openUser(const int& index);
     void login();
     void signUp();
 
     friend std::string createUserID(const Bank &b);
+    friend std::string createTransactionID(const Bank &b);
+    void openAccounts(const int& index);
+    void openAccount(Account& acc, const int& index);
+    bool createAccount(const int& index);
+    Transaction createTransaction(const long long& amount, const int& index, const Account& acc) const;
+    Transaction createTransaction(const long long& amount, const int& index, const Account& acc, const std::string& receiver);
 
 };
 
