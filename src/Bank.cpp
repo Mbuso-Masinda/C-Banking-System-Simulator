@@ -380,38 +380,48 @@ void Bank::signUp() {
 void Bank::openUser(const int &index) {
     User user = users[index];
     int input = 0;
-    std::cout << "\nWelcome " << user.getUsername() << std::endl << std::endl;
 
-    std::cout << "1. Open Account\n"
-              << "2. Create Account\n"
-              << "3. Delete Account\n"
-              << "0. Exit\n";
+    do {
+        std::cout << "\nWelcome " << user.getUsername() << std::endl << std::endl;
 
-    std::cin >> input;
+        std::cout << "1. Open Account\n"
+                  << "2. Create Account\n"
+                  << "3. Delete Account\n"
+                  << "0. Exit\n";
 
-    while (input < 0 || input > 2) {
-        std::cout << "Please enter a valid input\n";
         std::cout << "input: ";
         std::cin >> input;
-    }
 
-    switch (input) {
-        case 1:
-            openAccounts(index);
-            break;
-        case 2:
-            if (createAccount(index))
-                std::cout << "SUCCESS\n";
-            else
-                std::cout << "FAILED\n";
-            break;
-        case 3:
-            break;
-        case 0:
-            break;
-        default:
-            std::cerr << "Invalid input\n";
-    }
+        while (input < 0 || input > 2) {
+            if (input == 3) {
+                std::cout << "input(Delete account not available yet): ";
+                std::cin >> input;
+            }else {
+                std::cout << "input(Please enter a valid input): ";
+                std::cin >> input;
+            }
+
+        }
+
+        switch (input) {
+            case 1:
+                openAccounts(index);
+                break;
+            case 2:
+                if (createAccount(index))
+                    std::cout << "SUCCESS\n";
+                else
+                    std::cout << "FAILED\n";
+                break;
+            case 3:
+                break;
+            case 0:
+                break;
+            default:
+                std::cerr << "Invalid input\n";
+        }
+    }while (input != 0);
+
 }
 
 std::string createUserID(const Bank &b) {
