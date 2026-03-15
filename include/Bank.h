@@ -22,7 +22,7 @@ public:
     void withdraw(const Transaction& transaction);
 
     void saveBank();
-    void loadBank();
+    bool loadBank();
 
     static User loadUser(const std::string& path, const std::string& name);
 
@@ -40,6 +40,7 @@ public:
     bool createAccount(const int& index);
     Transaction createTransaction(const long long& amount, const int& index, const Account& acc) const;
     Transaction createTransaction(const long long& amount, const int& index, const Account& acc, const std::string& receiver);
+    Transaction createTransactionW(const long long& amount, const int& index,  const Account& acc) const;
 
 };
 

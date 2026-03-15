@@ -121,16 +121,15 @@ void Bank::saveBank() {
     }
 }
 
-void Bank::loadBank() {
+bool Bank::loadBank() {
     namespace fs = std::filesystem;
 
     if (fs::exists("../data/transaction_ledger")) {
         std::ifstream file("../data/transaction_ledger/transactionLedger.csv");
 
-        if (!file.is_open()) {
+        if (!file.is_open())
             std::cerr << "Error opening tLedger\n";
-            return;
-        }
+
 
         std::string line;
 
@@ -147,25 +146,27 @@ void Bank::loadBank() {
 
             User user = loadUser(userPath, username);
 
-            for (const auto& accEntry : fs::directory_iterator(userPath + "/Accounts"))
-            {
-                if (accEntry.is_directory())
+            if (fs::exists("../data/Users/" + username + "/Accounts")) {
+                for (const auto& accEntry : fs::directory_iterator(userPath + "/Accounts"))
                 {
-                    std::string accountPath = accEntry.path();
+                    if (accEntry.is_directory())
+                    {
+                        std::string accountPath = accEntry.path();
 
-                    Account acc = loadAccount(accountPath);
+                        Account acc = loadAccount(accountPath);
 
-                    std::ifstream in2(accountPath + "/transactionIDs.txt");
+                        std::ifstream in2(accountPath + "/transactionIDs.txt");
 
-                    if (!in2.is_open()) {
-                        std::cerr << "Error opening transaction ID\n";
+                        if (!in2.is_open()) {
+                            std::cerr << "Error opening transaction ID\n";
+                        }
+
+                        while (getline(in2, line, '\n')) {
+                            acc.addTransaction(line);
+                        }
+
+                        user.addAccount(acc);
                     }
-
-                    while (getline(in2, line, '\n')) {
-                        acc.addTransaction(line);
-                    }
-
-                    user.addAccount(acc);
                 }
             }
 
@@ -180,27 +181,29 @@ void Bank::loadBank() {
 
             User user = loadUser(userPath, username);
 
-            for (const auto& accEntry : fs::directory_iterator(userPath + "/Accounts"))
-            {
-                if (accEntry.is_directory())
+            if (fs::exists("../data/Users/" + username + "/Accounts")) {
+                for (const auto& accEntry : fs::directory_iterator(userPath + "/Accounts"))
                 {
-                    std::string accountPath = accEntry.path();
+                    if (accEntry.is_directory())
+                    {
+                        std::string accountPath = accEntry.path();
 
-                    Account acc = loadAccount(accountPath);
+                        Account acc = loadAccount(accountPath);
 
-                    std::ifstream in2(accountPath + "/transactionIDs.txt");
+                        std::ifstream in2(accountPath + "/transactionIDs.txt");
 
-                    if (!in2.is_open()) {
-                        std::cerr << "Error opening transaction ID\n";
+                        if (!in2.is_open()) {
+                            std::cerr << "Error opening transaction ID\n";
+                        }
+
+                        std::string line;
+
+                        while (getline(in2, line, '\n')) {
+                            acc.addTransaction(line);
+                        }
+
+                        user.addAccount(acc);
                     }
-
-                    std::string line;
-
-                    while (getline(in2, line, '\n')) {
-                        acc.addTransaction(line);
-                    }
-
-                    user.addAccount(acc);
                 }
             }
 
@@ -208,6 +211,7 @@ void Bank::loadBank() {
         }
     }
 
+    return true;
 }
 
 User Bank::loadUser(const std::string& path, const std::string& name) {
@@ -215,7 +219,7 @@ User Bank::loadUser(const std::string& path, const std::string& name) {
 
     if (!in.is_open()) {
         std::cout << "Error opening userDetails\n";
-        return User();
+        return {};
     }
 
     std::string fullName, idNumber, dateOfBirth, phoneNumber, email, username, password, userId;
@@ -231,16 +235,15 @@ User Bank::loadUser(const std::string& path, const std::string& name) {
 
     in.close();
 
-    return User(fullName, idNumber, dateOfBirth, phoneNumber, email, username, password, userId);
+    return {fullName, idNumber, dateOfBirth, phoneNumber, email, username, password, userId};
 }
 
 Account Bank::loadAccount(const std::string& path) {
-
     std::ifstream in(path + "/accountDetails.txt");
 
     if (!in.is_open()) {
         std::cout << "Error opening account details: " << path << std::endl;
-        return Account();
+        return {};
     }
 
     std::string accNum, balance;
@@ -252,7 +255,7 @@ Account Bank::loadAccount(const std::string& path) {
 
     in.close();
 
-    return Account(accNum, balanceCache);
+    return {accNum, balanceCache};
 }
 
 void Bank::updateBalance() {
@@ -263,13 +266,9 @@ void Bank::updateBalance() {
                 for (auto& globalTransaction : transactionLedger) {
                     if (transaction == globalTransaction.getTransactionId()) {
                         if (globalTransaction.getFromAccount() == account.getAccountNumber()) {
-                            std::cout << "\nWithdraw amount: " << globalTransaction.getAmount() << std::endl;
-                            std::cout << account.getAccountNumber() << " : " << account.getBalance() << std::endl;
                             account.withdraw(globalTransaction.getAmount());
                         }
                         else {
-                            std::cout << "\nDeposit amount: " << globalTransaction.getAmount() << std::endl;
-                            std::cout << account.getAccountNumber() << " : " << account.getBalance() << std::endl;
                             account.deposit(globalTransaction.getAmount());
                         }
                     }
@@ -289,7 +288,7 @@ void Bank::login() {
     std::string username;
     std::cin >> username;
 
-    for (size_t i =0; i < users.size(); i++) {
+    for (int i =0; i < users.size(); i++) {
         if (username == users[i].getUsername()) {
             index = i;
             found = true;
@@ -303,7 +302,7 @@ void Bank::login() {
         std::cout << "Enter Username(user not found): ";
         std::cin >> username;
 
-        for (size_t i =0; i < users.size(); i++) {
+        for (int i =0; i < users.size(); i++) {
             if (username == users[i].getUsername()) {
                 index = i;
                 found = true;
@@ -382,7 +381,7 @@ void Bank::signUp() {
 }
 
 void Bank::openUser(const int &index) {
-    User user = users[index];
+    const User user = users[index];
     int input = 0;
 
     do {
@@ -410,16 +409,12 @@ void Bank::openUser(const int &index) {
         switch (input) {
             case 1:
                 openAccounts(index);
-
-                saveBank();
                 break;
             case 2:
                 if (createAccount(index))
                     std::cout << "SUCCESS\n";
                 else
                     std::cout << "FAILED\n";
-
-                saveBank();
                 break;
             case 3:
                 break;
@@ -448,8 +443,8 @@ std::string createUserID(const Bank &b) {
 
     userID += std::to_string(num);
 
-    for (size_t i = 0; i < b.users.size(); i++) {
-        if (b.users[i].getUserId() == userID) {
+    for (const auto & user : b.users) {
+        if (user.getUserId() == userID) {
             found = true;
             break;
         }
@@ -465,19 +460,19 @@ std::string createUserID(const Bank &b) {
             userID += c;
         }
 
-        num = 10000 + rand() % 99999;
+        num = 10000 + rand() % 89999;
 
         userID += std::to_string(num);
 
-        for (size_t i = 0; i < b.users.size(); i++) {
-            if (b.users[i].getUserId() == userID) {
+        for (const auto & user : b.users) {
+            if (user.getUserId() == userID) {
                 found = true;
                 break;
             }
         }
 
-        for (size_t i = 0; i < b.users.size(); i++) {
-            if (b.users[i].getUserId() == userID) {
+        for (const auto & user : b.users) {
+            if (user.getUserId() == userID) {
                 found = true;
                 break;
             }
@@ -516,7 +511,6 @@ void Bank::openAccounts(const int &index) {
 }
 
 void Bank::openAccount(Account& acc, const int& index) {
-    std::cout << "Account number: " << acc.getAccountNumber() << std::endl << std::endl;
 
     int input = 0;
     long long amount = 0;
@@ -525,6 +519,8 @@ void Bank::openAccount(Account& acc, const int& index) {
     std::string receiver;
 
     do {
+        std::cout << "\nAccount number: " << acc.getAccountNumber() << std::endl;
+        std::cout << "Balance: " << acc.getBalance() << std::endl << std::endl;
 
         std::cout << "1. Deposit\n"
                   << "2. Withdraw\n"
@@ -547,9 +543,7 @@ void Bank::openAccount(Account& acc, const int& index) {
                 std::cin >> amount;
 
                 t = createTransaction(amount, index, acc);
-                this->deposit(t);
-
-                saveBank();
+                deposit(t);
                 break;
 
             case 2:
@@ -558,10 +552,8 @@ void Bank::openAccount(Account& acc, const int& index) {
                 std::cout << "Enter amount: R";
                 std::cin >> amount;
 
-                t = createTransaction(amount, index, acc);
-                this->withdraw(t);
-
-                saveBank();
+                t = createTransactionW(amount, index, acc);
+                withdraw(t);
                 break;
             case 3:
                 std::cout << "Transfer\n\n";
@@ -569,14 +561,16 @@ void Bank::openAccount(Account& acc, const int& index) {
                 std::cout << "Enter amount: R";
                 std::cin >> amount;
 
+                std::cin.ignore();
+
                 std::cout << "Enter receiver account number: ";
-                std::cin >> receiver;
+                getline(std::cin, receiver, '\n');
 
                 t = createTransaction(amount, index, acc, receiver);
 
-                this->transfer(t);
-
-                saveBank();
+                if (transfer(t))
+                    std::cout << "SUCCESS\n";
+                else std::cout << "FAILED\n";
                 break;
 
             case 0:
@@ -587,19 +581,34 @@ void Bank::openAccount(Account& acc, const int& index) {
 
         }
 
+
+
+
     }while (input != 0);
+
+    updateBalance();
 }
 
 Transaction Bank::createTransaction(const long long& amount, const int& index,  const Account& acc) const {
     const std::string userID = users[index].getUserId();
     const std::string fromAcc = "BANK";
-    const std::string toAcc = acc.getAccountNumber();
+    const std::string& toAcc = acc.getAccountNumber();
     const std::string title = "DEPOSIT";
     const std::string transactionID = createTransactionID(*this);
 
-    Transaction t(transactionID, userID, fromAcc, toAcc, title, amount);
+    return {transactionID, userID, fromAcc, toAcc, title, amount};
+}
 
-    return t;
+Transaction Bank::createTransactionW(const long long& amount, const int& index,  const Account& acc) const {
+    const std::string userID = users[index].getUserId();
+    const std::string& fromAcc = acc.getAccountNumber();
+    const std::string toAcc = "BANK";
+    const std::string title = "WITHDRAW";
+    const std::string transactionID = createTransactionID(*this);
+
+
+
+    return {transactionID, userID, fromAcc, toAcc, title, amount};
 }
 
 Transaction Bank::createTransaction(const long long& amount, const int& index,  const Account& acc, const std::string& receiver) {
@@ -607,29 +616,30 @@ Transaction Bank::createTransaction(const long long& amount, const int& index,  
 
     std::string toAcc;
 
-    for (size_t i = 0; i < users[index].getAccounts().size(); i++) {
-        if (users[index].getAccounts()[i].getAccountNumber() == receiver) {
-            toAcc = receiver;
-            found = true;
-            break;
+    for (auto& user : users) {
+        for (const auto & account : user.getAccounts()) {
+            if (account.getAccountNumber() == receiver) {
+                toAcc = receiver;
+                found = true;
+                break;
+            }
         }
     }
 
+
     if (!found) {
         std::cerr << "Account not found\n";
-        Transaction t;
+        const Transaction t;
         return t;
     }
 
     const std::string userID = users[index].getUserId();
-    const std::string fromAcc = acc.getAccountNumber();
+    const std::string& fromAcc = acc.getAccountNumber();
 
-    const std::string title = "DEPOSIT";
+    const std::string title = "TRANSFER";
     const std::string transactionID = createTransactionID(*this);
 
-    Transaction t(transactionID, userID, fromAcc, toAcc, title, amount);
-
-    return t;
+    return {transactionID, userID, fromAcc, toAcc, title, amount};
 }
 
 std::string createTransactionID(const Bank &b) {
@@ -639,10 +649,10 @@ std::string createTransactionID(const Bank &b) {
     srand(time(nullptr));
 
 
-    long int num = 10000000 + rand() % 99999999;
+    long int num = 10000000 + rand() % 89999999;
     transactionID += std::to_string(num);
 
-    num = 1000 + rand() % 9999;
+    num = 1000 + rand() % 8999;
     transactionID += std::to_string(num);
 
     for (const auto& transaction : b.transactionLedger) {
@@ -651,11 +661,11 @@ std::string createTransactionID(const Bank &b) {
         }
     }
 
-    while (!found) {
-        num = 10000000 + rand() % 99999999;
+    while (found) {
+        num = 10000000 + rand() % 89999999;
         transactionID += std::to_string(num);
 
-        num = 1000 + rand() % 9999;
+        num = 1000 + rand() % 8999;
         transactionID += std::to_string(num);
 
         for (const auto& transaction : b.transactionLedger) {
@@ -674,15 +684,15 @@ bool Bank::createAccount(const int &index) {
 
     srand(time(nullptr));
 
-    int num = 10000 + rand() % 99999;
+    int num = 10000 + rand() % 89999;
 
     accountNumber += std::to_string(num) + " - ";
 
-    num = 1000 + rand() % 9999;
+    num = 1000 + rand() % 8999;
 
     accountNumber += std::to_string(num) + " - ";
 
-    num = 10 + rand() % 99;
+    num = 10 + rand() % 89;
 
     accountNumber += std::to_string(num);
 
@@ -697,15 +707,15 @@ bool Bank::createAccount(const int &index) {
     while (found) {
         accountNumber = "";
 
-        num = 10000 + rand() % 99999;
+        num = 10000 + rand() % 89999;
 
         accountNumber += std::to_string(num) + " - ";
 
-        num = 1000 + rand() % 9999;
+        num = 1000 + rand() % 8999;
 
         accountNumber += std::to_string(num) + " - ";
 
-        num = 10 + rand() % 99;
+        num = 10 + rand() % 89;
 
         accountNumber += std::to_string(num);
 
@@ -723,8 +733,8 @@ bool Bank::createAccount(const int &index) {
 
     users[index].addAccount(acc);
 
-    for (int i = 0; i < users[index].getAccounts().size(); i++) {
-        if (users[index].getAccounts()[i].getAccountNumber() == acc.getAccountNumber()) {
+    for (const auto & i : users[index].getAccounts()) {
+        if (i.getAccountNumber() == acc.getAccountNumber()) {
             return true;
         }
     }
